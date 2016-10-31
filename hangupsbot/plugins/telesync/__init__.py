@@ -164,7 +164,13 @@ class TelegramBot(telepot.async.Bot):
                     yield from self.onPhotoCallback(self, chat_id, msg)
 
                 elif content_type == 'sticker':
-                    yield from self.onStickerCallback(self, chat_id, msg)
+                    if 'sync_sticker' in tg_bot.ho_bot.config.get_by_path(['telesync']):
+                        if not tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
+                            yield from self.onStickerCallback(self, chat_id, msg)
+                        else:
+                            pass
+                    else:
+                        pass
 
             elif flavor == "inline_query":  # inline query e.g. "@gif cute panda"
                 query_id, from_id, query_string = telepot.glance(msg, flavor=flavor)
@@ -256,11 +262,6 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 @asyncio.coroutine
 def tg_on_sticker(tg_bot, tg_chat_id, msg):
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
-
-    if 'sync_sticker' not in tg_bot.ho_bot.config.get_by_path(['telesync']):
-        return
-    if not tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
-        return
 
     if str(tg_chat_id) in tg2ho_dict:
         ho_conv_id = tg2ho_dict[str(tg_chat_id)]
