@@ -255,42 +255,39 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 
 @asyncio.coroutine
 def tg_on_sticker(tg_bot, tg_chat_id, msg):
-    if 'sync_sticker' not in tg_bot.ho_bot.config.get_by_path(['telesync']):
-        pass
-    if not tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
-        pass
+    if 'sync_sticker' in tg_bot.ho_bot.config.get_by_path(['telesync']):
+        if not tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
+            tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
 
-    tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
+            if str(tg_chat_id) in tg2ho_dict:
+                ho_conv_id = tg2ho_dict[str(tg_chat_id)]
 
-    if str(tg_chat_id) in tg2ho_dict:
-        ho_conv_id = tg2ho_dict[str(tg_chat_id)]
+                photo_id = msg['sticker']['file_id']
 
-        photo_id = msg['sticker']['file_id']
+                # TODO: find a better way to handling file paths
+                photo_path = 'hangupsbot/plugins/telesync/telesync_photos/' + photo_id + ".jpg"
 
-        # TODO: find a better way to handling file paths
-        photo_path = 'hangupsbot/plugins/telesync/telesync_photos/' + photo_id + ".jpg"
+                text = "Uploading sticker from <b>{uname}</b> in <b>{gname}</b>...".format(
+                    uname=tg_util_sync_get_user_name(msg),
+                    gname=tg_util_get_group_name(msg))
 
-        text = "Uploading sticker from <b>{uname}</b> in <b>{gname}</b>...".format(
-            uname=tg_util_sync_get_user_name(msg),
-            gname=tg_util_get_group_name(msg))
+                file_dir = os.path.dirname(photo_path)
+                if not os.path.exists(file_dir):
+                    os.makedirs(file_dir)
 
-        file_dir = os.path.dirname(photo_path)
-        if not os.path.exists(file_dir):
-            os.makedirs(file_dir)
+                yield from tg_bot.download_file(photo_id, photo_path)
 
-        yield from tg_bot.download_file(photo_id, photo_path)
+                logger.info("[TELESYNC] Uploading sticker {fid}".format(fid=photo_id))
+                with open(photo_path, "rb") as photo_file:
+                    ho_photo_id = yield from tg_bot.ho_bot._client.upload_image(photo_file,
+                                                                                filename=os.path.basename(photo_path))
 
-        logger.info("[TELESYNC] Uploading sticker {fid}".format(fid=photo_id))
-        with open(photo_path, "rb") as photo_file:
-            ho_photo_id = yield from tg_bot.ho_bot._client.upload_image(photo_file,
-                                                                        filename=os.path.basename(photo_path))
+                yield from tg_bot.ho_bot.coro_send_message(ho_conv_id, '', image_id=ho_photo_id)
 
-        yield from tg_bot.ho_bot.coro_send_message(ho_conv_id, '', image_id=ho_photo_id)
+                logger.info("[TELESYNC] Upload succeed.")
 
-        logger.info("[TELESYNC] Upload succeed.")
-
-        if tg_bot.ho_bot.config.get_by_path(['telesync'])['do_not_keep_photos']:
-            os.remove(photo_path)  # don't use unnecessary space on disk
+                if tg_bot.ho_bot.config.get_by_path(['telesync'])['do_not_keep_photos']:
+                    os.remove(photo_path)  # don't use unnecessary space on disk
 
 
 @asyncio.coroutine
