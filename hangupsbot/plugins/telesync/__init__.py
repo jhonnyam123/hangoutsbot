@@ -256,7 +256,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 @asyncio.coroutine
 def tg_on_sticker(tg_bot, tg_chat_id, msg):
     if 'sync_sticker' in tg_bot.ho_bot.config.get_by_path(['telesync']):
-        if not tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
+        if tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
             tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
 
             if str(tg_chat_id) in tg2ho_dict:
