@@ -544,7 +544,7 @@ def tg_command_unsync_profile(bot, chat_id, args):
     if args['user_id'] in tg2ho_dict:
         ho_id = tg2ho_dict[str(args['user_id'])]
         del tg2ho_dict[str(args['user_id'])]
-        del ho2tg_dict[ho_id]
+        del ho2tg_dict[str(ho_id)]
         new_memory = {'tg2ho': tg2ho_dict, 'ho2tg': ho2tg_dict}
         bot.ho_bot.memory.set_by_path(['profilesync'], new_memory)
         text = "Succsessfully removed sync of your profile."
