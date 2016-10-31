@@ -164,7 +164,9 @@ class TelegramBot(telepot.async.Bot):
                     yield from self.onPhotoCallback(self, chat_id, msg)
 
                 elif content_type == 'sticker':
-                    yield from self.onStickerCallback(self, chat_id, msg)
+                    if 'sync_sticker' in tg_bot.ho_bot.config.get_by_path(['telesync']):
+                        if tg_bot.ho_bot.config.get_by_path(['telesync'])['sync_sticker']:
+                            yield from self.onStickerCallback(self, chat_id, msg)
 
             elif flavor == "inline_query":  # inline query e.g. "@gif cute panda"
                 query_id, from_id, query_string = telepot.glance(msg, flavor=flavor)
