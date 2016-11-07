@@ -26,7 +26,7 @@ class TelegramBot(telepot.async.Bot):
                 super(TelegramBot, self).__init__(self.config['api_key'])
             except Exception as e:
                 raise telepot.TelegramError("Couldn't initialize telesync", 10)
-            
+
             if "bot_name" in hangupsbot.config.get_by_path(["telesync"]):
                 self.name = hangupsbot.config.get_by_path(["telesync"])["bot_name"]
             else:
@@ -234,7 +234,7 @@ def tg_util_sync_get_user_name(msg, chat_action='from'):
 @asyncio.coroutine
 def tg_on_message(tg_bot, tg_chat_id, msg):
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
-    telesync_config =tg_bot.ho_bot.config.get_by_path(['telesync'])
+    telesync_config = tg_bot.ho_bot.config.get_by_path(['telesync'])
 
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
@@ -246,7 +246,8 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
                 if 'reply_to_message' in msg:
                     content_type, chat_type, chat_id = telepot.glance(msg['reply_to_message'])
                     if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.name.lower():
-                        r_text = msg['reply_to_message']['text'].split(':')
+                        r_text = msg['reply_to_message']['text'].split(':') if 'text' in msg[
+                            'reply_to_message'] else content_type
                         r2_user = r_text[0]
                     else:
                         r_text = ['', msg['reply_to_message']['text']]
