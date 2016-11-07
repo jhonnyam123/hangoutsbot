@@ -29,6 +29,8 @@ class TelegramBot(telepot.async.Bot):
             
             if "bot_name" in hangupsbot.config.get_by_path(["telesync"]):
                 self.name = hangupsbot.config.get_by_path(["telesync"])["bot_name"]
+            else:
+                self.name = "bot"
 
             self.commands = {}
             self.onMessageCallback = TelegramBot.on_message
