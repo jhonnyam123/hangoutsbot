@@ -250,7 +250,8 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
                             'reply_to_message'] else content_type
                         r2_user = r_text[0]
                     else:
-                        r_text = ['', msg['reply_to_message']['text']]
+                        r_text = ['', msg['reply_to_message']['text']] if 'text' in msg[
+                            'reply_to_message'] else content_type
                         r2_user = tg_util_sync_get_user_name(msg['reply_to_message'])
                     if content_type == 'text':
                         r2_text = r_text[1]
