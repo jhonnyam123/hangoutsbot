@@ -35,6 +35,8 @@ class TelegramBot(telepot.async.Bot):
             self.onLocationShareCallback = TelegramBot.on_location_share
             self.onSupergroupUpgradeCallback = TelegramBot.on_supoergroup_upgrade
             self.ho_bot = hangupsbot
+            bot_data = yield from tg_bot.getMe()
+            self.bot_name = bot_data['first_name']
         else:
             logger.info('telesync disabled in config.json')
 
@@ -240,9 +242,8 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
             if telesync_config['sync_reply_to']:
                 if 'reply_to_message' in msg:
                     content_type, chat_type, chat_id = telepot.glance(msg['reply_to_message'])
-                    bot_name = yield from tg_bot.getMe()
-                    logger.info(bot_name)
-                    if msg['reply_to_message']['from']['first_name'].lower() == 'missiondaybot':
+
+                    if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.bot_name.lower():
                         r_text = msg['reply_to_message']['text'].split(':') if 'text' in msg[
                             'reply_to_message'] else content_type
                         r2_user = r_text[0]
