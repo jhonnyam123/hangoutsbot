@@ -35,7 +35,11 @@ class TelegramBot(telepot.async.Bot):
             self.onLocationShareCallback = TelegramBot.on_location_share
             self.onSupergroupUpgradeCallback = TelegramBot.on_supoergroup_upgrade
             self.ho_bot = hangupsbot
-            bot_data = dict(self.getMe())
+            loop = asyncio.get_event_loop()
+            future = asyncio.Future()
+            asyncio.ensure_future()
+            loop.run_until_complete(future)
+            bot_data = future.result()
             self.bot_name = bot_data['first_name']
         else:
             logger.info('telesync disabled in config.json')
