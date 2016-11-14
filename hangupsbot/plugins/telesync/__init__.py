@@ -37,7 +37,7 @@ class TelegramBot(telepot.async.Bot):
             self.ho_bot = hangupsbot
             loop = asyncio.get_event_loop()
             future = asyncio.Future()
-            asyncio.ensure_future()
+            asyncio.ensure_future(self.getMe())
             loop.run_until_complete(future)
             bot_data = future.result()
             self.bot_name = bot_data['first_name']
