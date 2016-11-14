@@ -240,7 +240,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
             if telesync_config['sync_reply_to']:
                 if 'reply_to_message' in msg:
                     content_type, chat_type, chat_id = telepot.glance(msg['reply_to_message'])
-                    if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.getMe():
+                    if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.getMe().lower():
                         r_text = msg['reply_to_message']['text'].split(':') if 'text' in msg[
                             'reply_to_message'] else content_type
                         r2_user = r_text[0]
