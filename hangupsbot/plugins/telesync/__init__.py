@@ -264,8 +264,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
     telesync_config = tg_bot.ho_bot.config.get_by_path(['telesync'])
 
     if str(tg_chat_id) in tg2ho_dict:
-        text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_get_group_name(msg),
+        text = "<b>{uname}</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
                                                                 text=msg['text'])
 
         if 'reply_to_message' in msg:
@@ -309,9 +308,8 @@ def tg_on_sticker(tg_bot, tg_chat_id, msg):
         # TODO: find a better way to handling file paths
         photo_path = 'hangupsbot/plugins/telesync/telesync_photos/' + photo_id + ".jpg"
 
-        text = "Uploading sticker from <b>{uname}</b> in <b>{gname}</b>...".format(
-            uname=tg_util_sync_get_user_name(msg),
-            gname=tg_util_get_group_name(msg))
+        text = "Uploading sticker from <b>{uname}</b> ...".format(
+            uname=tg_util_sync_get_user_name(msg))
         yield from tg_bot.ho_bot.coro_send_message(conversation=ho_conv_id, message=text)
 
         file_dir = os.path.dirname(photo_path)
@@ -348,9 +346,8 @@ def tg_on_photo(tg_bot, tg_chat_id, msg):
         # TODO: find a better way to handling file paths
         photo_path = 'hangupsbot/plugins/telesync/telesync_photos/' + photo_id + ".jpg"
 
-        text = "Uploading photo from <b>{uname}</b> in <b>{gname}</b>...".format(
-            uname=tg_util_sync_get_user_name(msg),
-            gname=tg_util_get_group_name(msg))
+        text = "Uploading photo from <b>{uname}</b>...".format(
+            uname=tg_util_sync_get_user_name(msg))
         yield from tg_bot.ho_bot.coro_send_message(ho_conv_id, text)
 
         file_dir = os.path.dirname(photo_path)
@@ -412,8 +409,7 @@ def tg_on_location_share(tg_bot, tg_chat_id, msg):
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
 
     if str(tg_chat_id) in tg2ho_dict:
-        text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_get_group_name(msg),
+        text = "<b>{uname}</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
                                                                 text=maps_url)
 
         ho_conv_id = tg2ho_dict[str(tg_chat_id)]
@@ -850,9 +846,8 @@ def _on_hangouts_message(bot, event, command=""):
 
     if event.conv_id in ho2tg_dict:
         user_gplus = 'https://plus.google.com/u/0/{uid}/about'.format(uid=event.user_id.chat_id)
-        text = '<a href="{user_gplus}">{uname}</a> <b>({gname})</b>: {text}'.format(uname=event.user.full_name,
+        text = '<a href="{user_gplus}">{uname}</a>: {text}'.format(uname=event.user.full_name,
                                                                                     user_gplus=user_gplus,
-                                                                                    gname=event.conv.name,
                                                                                     text=sync_text)
         yield from tg_bot.sendMessage(ho2tg_dict[event.conv_id], text, parse_mode='html',
                                       disable_web_page_preview=True)
