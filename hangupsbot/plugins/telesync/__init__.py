@@ -265,12 +265,12 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_sync_get_user_name(msg),
+                                                                gname=tg_util_get_group_name(msg),
                                                                 text=msg['text'])
 
-        if 'sync_reply_to' in telesync_config:
-            if telesync_config['sync_reply_to']:
-                if 'reply_to_message' in msg:
+        if 'reply_to_message' in msg:
+            if 'sync_reply_to' in telesync_config:
+                if telesync_config['sync_reply_to']:
                     content_type, chat_type, chat_id = telepot.glance(msg['reply_to_message'])
 
                     if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.name.lower():
