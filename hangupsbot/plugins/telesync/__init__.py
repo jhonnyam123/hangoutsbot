@@ -52,12 +52,6 @@ class TelegramBot(telepot.async.Bot):
             self.onLocationShareCallback = TelegramBot.on_location_share
             self.onSupergroupUpgradeCallback = TelegramBot.on_supoergroup_upgrade
             self.ho_bot = hangupsbot
-            loop = asyncio.get_event_loop()
-            future = asyncio.Future()
-            asyncio.ensure_future(self.getMe())
-            loop.run_until_complete(future)
-            bot_data = future.result()
-            self.bot_name = bot_data['first_name']
         else:
             logger.info('telesync disabled in config.json')
 
@@ -279,7 +273,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
                 if 'reply_to_message' in msg:
                     content_type, chat_type, chat_id = telepot.glance(msg['reply_to_message'])
 
-                    if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.bot_name.lower():
+                    if msg['reply_to_message']['from']['first_name'].lower() == tg_bot.name.lower():
                         r_text = msg['reply_to_message']['text'].split(':') if 'text' in msg[
                             'reply_to_message'] else content_type
                         r2_user = r_text[0]
