@@ -272,7 +272,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 >>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_sync_get_user_name(msg),
+                                                                gname=tg_util_get_group_name(msg),
                                                                 text=msg['text'])
 
         if 'reply_to_message' in msg:
