@@ -251,11 +251,7 @@ def tg_util_sync_get_user_name(msg, chat_action='from'):
     logger.info("message from: {}".format(msg['from']['id']))
     if str(msg['from']['id']) in profile_dict:
         # logger.info("message from: {}".format(msg['from']['id']))
-<<<<<<< HEAD
         user_html = profile_dict[str(msg['from']['id'])]['user_text']
-=======
-        user_html= profile_dict[str(msg['from']['id'])]['user_text']
->>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
     else:
         url = tg_util_create_telegram_me_link(username)
         user_html = "<a href='{url}' >{uname}</a>".format(url=url, uname=msg[chat_action]['first_name'])
@@ -265,15 +261,14 @@ def tg_util_sync_get_user_name(msg, chat_action='from'):
 @asyncio.coroutine
 def tg_on_message(tg_bot, tg_chat_id, msg):
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
-<<<<<<< HEAD
     telesync_config = tg_bot.ho_bot.config.get_by_path(['telesync'])
-
-=======
->>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
     if str(tg_chat_id) in tg2ho_dict:
-        text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_get_group_name(msg),
-                                                                text=msg['text'])
+        chat_title = ""
+        if "sync_chat_titles" not in telesync_config or telesync_config["sync_chat_titles"]:
+            chat_title = ' <b>({gname})</b>'.format(gname=tg_util_get_group_name(msg))
+        text = "<b>{uname}</b>{chat_title}: {text}".format(uname=tg_util_sync_get_user_name(msg),
+                                                           chat_title=chat_title,
+                                                           text=msg['text'])
 
         if 'reply_to_message' in msg:
             if 'sync_reply_to' in telesync_config:
@@ -381,6 +376,10 @@ def tg_on_photo(tg_bot, tg_chat_id, msg):
 
 @asyncio.coroutine
 def tg_on_user_join(tg_bot, tg_chat_id, msg):
+    config_dict = tg_bot.ho_bot.config.get_by_path(['telesync'])
+    if 'sync_join_messages' not in config_dict or not config_dict['sync_join_messages']:
+        return
+
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> joined <b>{gname}</b>".format(
@@ -397,6 +396,10 @@ def tg_on_user_join(tg_bot, tg_chat_id, msg):
 
 @asyncio.coroutine
 def tg_on_user_leave(tg_bot, tg_chat_id, msg):
+    config_dict = tg_bot.ho_bot.config.get_by_path(['telesync'])
+    if 'sync_join_messages' not in config_dict or not config_dict['sync_join_messages']:
+        return
+
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> left <b>{gname}</b>".format(
@@ -417,11 +420,15 @@ def tg_on_location_share(tg_bot, tg_chat_id, msg):
     maps_url = tg_util_create_gmaps_url(lat, long)
 
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
+    config = tg_bot.ho_bot.config.get_by_path(['telesync'])
 
     if str(tg_chat_id) in tg2ho_dict:
-        text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_get_group_name(msg),
-                                                                text=maps_url)
+        chat_title = ""
+        if "sync_chat_titles" not in config or config["sync_chat_titles"]:
+            chat_title = ' <b>({gname})</b>'.format(gname=tg_util_get_group_name(msg))
+        text = "<b>{uname}</b>{chat_title}: {text}".format(uname=tg_util_sync_get_user_name(msg),
+                                                           chat_title=chat_title,
+                                                           text=maps_url)
 
         ho_conv_id = tg2ho_dict[str(tg_chat_id)]
         yield from tg_bot.ho_bot.coro_send_message(ho_conv_id, text)
@@ -647,7 +654,6 @@ def tg_command_unsync_profile(bot, chat_id, args):
     yield from bot.sendMessage(chat_id, text)
 
 
-<<<<<<< HEAD
 @asyncio.coroutine
 def tg_command_get_me(bot, chat_id, args):
     """
@@ -671,8 +677,6 @@ def tg_command_get_me(bot, chat_id, args):
         yield from bot.sendMessage(chat_id, "Only admins can do that")
 
 
-=======
->>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
 # TELEGRAM DEFINITIONS END
 
 # HANGOUTSBOT
@@ -686,6 +690,9 @@ def _initialise(bot):
                                               'enabled': True,
                                               'admins': [],
                                               'do_not_keep_photos': True,
+                                              'enable_sticker_sync' : True,
+                                              'sync_chat_titles' : True,
+                                              'sync_join_messages' : True,
                                               'be_quiet': False})
 
     bot.config.save()
@@ -717,11 +724,7 @@ def _initialise(bot):
         tg_bot.add_command("/tldr", tg_command_tldr)
         tg_bot.add_command("/syncprofile", tg_command_sync_profile)
         tg_bot.add_command("/unsyncprofile", tg_command_unsync_profile)
-<<<<<<< HEAD
         tg_bot.add_command("/getme", tg_command_get_me)
-=======
->>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
-
         loop = asyncio.get_event_loop()
         # run telegram bot
         loop.create_task(tg_bot.message_loop())
@@ -860,13 +863,17 @@ def _on_hangouts_message(bot, event, command=""):
         sync_text = "(shared an image)"
 
     ho2tg_dict = bot.memory.get_by_path(['telesync'])['ho2tg']
+    config_dict = tg_bot.ho_bot.config.get_by_path(['telesync'])
 
     if event.conv_id in ho2tg_dict:
         user_gplus = 'https://plus.google.com/u/0/{uid}/about'.format(uid=event.user_id.chat_id)
-        text = '<a href="{user_gplus}">{uname}</a> <b>({gname})</b>: {text}'.format(uname=event.user.full_name,
-                                                                                    user_gplus=user_gplus,
-                                                                                    gname=event.conv.name,
-                                                                                    text=sync_text)
+        chat_title = ""
+        if "sync_chat_titles" not in config_dict or config_dict["sync_chat_titles"]:
+            chat_title = ' <b>({gname})</b>'.format(gname=event.conv.name)
+        text = '<a href="{user_gplus}">{uname}</a>{chat_title}: {text}'.format(uname=event.user.full_name,
+                                                                               user_gplus=user_gplus,
+                                                                               chat_title=chat_title,
+                                                                               text=sync_text)
         yield from tg_bot.sendMessage(ho2tg_dict[event.conv_id], text, parse_mode='html',
                                       disable_web_page_preview=True)
         if has_photo:
@@ -894,6 +901,9 @@ def _on_hangouts_message(bot, event, command=""):
                 else:
                     yield from tg_bot.sendPhoto(ho2tg_dict[event.conv_id], f)
 
+            if config_dict['do_not_keep_photos']:
+                os.remove(photo_path)  # don't use unnecessary space on disk
+                logger.info("plugins/telesync: file removed: {file}".format(file=photo_path))
 
 
 def create_membership_change_message(user_name, user_gplus, group_name, membership_event="left"):
@@ -906,6 +916,10 @@ def create_membership_change_message(user_name, user_gplus, group_name, membersh
 
 @handler.register(priority=5, event=hangups.MembershipChangeEvent)
 def _on_membership_change(bot, event, command=""):
+    config_dict = tg_bot.ho_bot.config.get_by_path(['telesync'])
+    if 'sync_join_messages' not in config_dict or not config_dict['sync_join_messages']:
+        return
+
     # Generate list of added or removed users
     event_users = [event.conv.get_user(user_id) for user_id
                    in event.conv_event.participant_ids]
