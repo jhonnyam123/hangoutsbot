@@ -251,7 +251,11 @@ def tg_util_sync_get_user_name(msg, chat_action='from'):
     logger.info("message from: {}".format(msg['from']['id']))
     if str(msg['from']['id']) in profile_dict:
         # logger.info("message from: {}".format(msg['from']['id']))
+<<<<<<< HEAD
         user_html = profile_dict[str(msg['from']['id'])]['user_text']
+=======
+        user_html= profile_dict[str(msg['from']['id'])]['user_text']
+>>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
     else:
         url = tg_util_create_telegram_me_link(username)
         user_html = "<a href='{url}' >{uname}</a>".format(url=url, uname=msg[chat_action]['first_name'])
@@ -261,11 +265,14 @@ def tg_util_sync_get_user_name(msg, chat_action='from'):
 @asyncio.coroutine
 def tg_on_message(tg_bot, tg_chat_id, msg):
     tg2ho_dict = tg_bot.ho_bot.memory.get_by_path(['telesync'])['tg2ho']
+<<<<<<< HEAD
     telesync_config = tg_bot.ho_bot.config.get_by_path(['telesync'])
 
+=======
+>>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
     if str(tg_chat_id) in tg2ho_dict:
         text = "<b>{uname}</b> <b>({gname})</b>: {text}".format(uname=tg_util_sync_get_user_name(msg),
-                                                                gname=tg_util_get_group_name(msg),
+                                                                gname=tg_util_sync_get_user_name(msg),
                                                                 text=msg['text'])
 
         if 'reply_to_message' in msg:
@@ -640,6 +647,7 @@ def tg_command_unsync_profile(bot, chat_id, args):
     yield from bot.sendMessage(chat_id, text)
 
 
+<<<<<<< HEAD
 @asyncio.coroutine
 def tg_command_get_me(bot, chat_id, args):
     """
@@ -663,6 +671,8 @@ def tg_command_get_me(bot, chat_id, args):
         yield from bot.sendMessage(chat_id, "Only admins can do that")
 
 
+=======
+>>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
 # TELEGRAM DEFINITIONS END
 
 # HANGOUTSBOT
@@ -707,7 +717,10 @@ def _initialise(bot):
         tg_bot.add_command("/tldr", tg_command_tldr)
         tg_bot.add_command("/syncprofile", tg_command_sync_profile)
         tg_bot.add_command("/unsyncprofile", tg_command_unsync_profile)
+<<<<<<< HEAD
         tg_bot.add_command("/getme", tg_command_get_me)
+=======
+>>>>>>> 8afbab6... Added sync feature to use g+ profile in Hangouts instead of Telegram user
 
         loop = asyncio.get_event_loop()
         # run telegram bot
