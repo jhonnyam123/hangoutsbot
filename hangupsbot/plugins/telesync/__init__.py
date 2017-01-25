@@ -248,7 +248,7 @@ def tg_on_message(tg_bot, tg_chat_id, msg):
 
     if str(tg_chat_id) in tg2ho_dict:
         if str(msg['from']['id']) in tg2ho_profiles \
-            and "use_gplus" in tg2ho_profiles[str(msg['from']['id'])]:
+            and "user_gplus" in tg2ho_profiles[str(msg['from']['id'])]:
             user_text = tg_bot.ho_bot.memory.get_by_path(['profilesync'])['tg2ho'][str(msg['from']['id'])]['user_text']
         else:
             user_text = "<b>{uname}</b>".format(uname=tg_util_sync_get_user_name(msg))
