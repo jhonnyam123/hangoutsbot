@@ -144,8 +144,8 @@ def aiohttp_start(bot, name, port, certfile, RequestHandlerClass, group, callbac
 
     app = web.Application()
 
-    handler = app.make_handler()
     RequestHandler.addroutes(app.router)
+    handler = app.make_handler()
 
     if certfile:
         sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
